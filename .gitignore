@@ -1,0 +1,12 @@
+# System
+.*
+!.gitignore
+!.gitkeep
+
+# Composer
+/vendor
+
+# Hika
+/tmp/*
+/cache/*
+/usr/*

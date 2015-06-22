@@ -1,0 +1,20 @@
+{
+    "require": {
+        "windwalker/console": "2.*@stable",
+        "windwalker/filesystem": "2.*@stable",
+        "windwalker/uri": "2.*@stable",
+        "windwalker/environment": "2.*@stable",
+        "windwalker/di": "2.*@stable",
+        "windwalker/string": "2.*@stable",
+        "windwalker/utilities": "2.*@stable",
+        "joomla/archive": "1.*@stable",
+        "joomla/http": "1.*@stable",
+        "guzzlehttp/guzzle": "*@stable",
+        "symfony/yaml": "2.*@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hika\\": "src/"
+        }
+    }
+}
