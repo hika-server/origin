@@ -27,7 +27,7 @@ class AutoconfComponent extends AbstractGithubComponent
 	 *
 	 * @var  string
 	 */
-	protected $version = 'AUTOCONF-2.59d';
+	protected $version = 'AUTOCONF-2.59';
 
 	/**
 	 * Property repository.

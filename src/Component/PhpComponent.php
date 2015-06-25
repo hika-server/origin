@@ -27,7 +27,7 @@ class PhpComponent extends AbstractGithubComponent
 	 *
 	 * @var  string
 	 */
-	protected $version = 'php-5.3.29';
+	protected $version = 'php-7.0.0alpha1';
 
 	/**
 	 * Property repository.
