@@ -50,6 +50,23 @@ class PhpComponent extends AbstractGithubComponent
 	 */
 	protected function initialise()
 	{
-		$this->addDependency(new ZlibComponent);
+		$this->addDependency(new AutoconfComponent)
+			->addDependency(new BisonComponent)
+			->addDependency(new ZlibComponent);
+
+		$this->config['compile.again'] = true;
+	}
+
+	/**
+	 * getAliasPrepare
+	 *
+	 * @return  array
+	 */
+	public function getAliasPrepare()
+	{
+		return [
+			'export PHP_AUTOCONF=' . $this->getDependency('autoconf')->getTargetPath() . '/bin/autoconf',
+			'alias bison=' . $this->getDependency('bison')->getTargetPath() . '/bin/bison'
+		];
 	}
 }

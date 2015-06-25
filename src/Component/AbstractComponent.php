@@ -10,8 +10,10 @@ namespace Hika\Component;
 
 use Hika\Filesystem\Downloader;
 use Hika\Ioc;
+use Windwalker\Filesystem\Exception\FilesystemException;
 use Windwalker\Filesystem\File;
 use Windwalker\Filesystem\Folder;
+use Windwalker\Registry\Registry;
 
 /**
  * The AbstractComponent class.
@@ -58,9 +60,9 @@ abstract class AbstractComponent
 	/**
 	 * Property config.
 	 *
-	 * @var  array
+	 * @var  Registry
 	 */
-	protected $config = [];
+	protected $config;
 
 	/**
 	 * Property configureOptions.
@@ -93,7 +95,7 @@ abstract class AbstractComponent
 	/**
 	 * Class init.
 	 */
-	public function __construct()
+	public function __construct(Registry $config = null)
 	{
 		if (!$this->name)
 		{
@@ -109,6 +111,8 @@ abstract class AbstractComponent
 
 		$this->io = Ioc::getCurrentCommand()->getIO();
 		$this->process = Ioc::getProcess();
+
+		$this->config = $config instanceof Registry ? $config : new Registry($config);
 
 		$this->initialise();
 	}
@@ -138,6 +142,23 @@ abstract class AbstractComponent
 	}
 
 	/**
+	 * getDependency
+	 *
+	 * @param string $name
+	 *
+	 * @return  AbstractComponent
+	 */
+	public function getDependency($name)
+	{
+		if (empty($this->dependencies[$name]))
+		{
+			throw new \OutOfBoundsException($this->getName() . ' has no dependency: ' . $name);
+		}
+
+		return $this->dependencies[$name];
+	}
+
+	/**
 	 * Method to get property Name
 	 *
 	 * @return  string
@@ -154,6 +175,13 @@ abstract class AbstractComponent
 	 */
 	public function compile()
 	{
+		if (!$this->config['compile.again'] && is_dir($this->getTargetPath()))
+		{
+			$this->out($this->getName() . ' has compiled');
+
+			return;
+		}
+
 		$this->compileDependencies();
 
 		if ($this->test)
@@ -175,8 +203,8 @@ abstract class AbstractComponent
 		$this->out('Make Install');
 		$this->makeInstall();
 
-		$this->out('Move to Library');
-		$this->moveToLibrary();
+//		$this->out('Move to Library');
+//		$this->moveToLibrary();
 
 		$this->out($this->getName() . ' build complete.');
 	}
@@ -231,9 +259,9 @@ abstract class AbstractComponent
 	 */
 	public function doDownload()
 	{
-		$ext = File::getExtension($this->getDownloadUrl()) ? : 'zip';
+		$url = new \SplFileInfo($this->getDownloadUrl());
 
-		$dest = new \SplFileInfo($this->getArchivePath() . '/' . $this->getName() . '.' . $ext);
+		$dest = new \SplFileInfo($this->getArchivePath() . '/' . $url->getBasename());
 
 		Folder::create($dest->getPath());
 
@@ -259,8 +287,15 @@ abstract class AbstractComponent
 
 		$this->execute('chmod -R +x ' . $dest);
 
+		$dest = rtrim($dest . '/' . $this->getExtractedPath(), '/');
+
 		if ($move)
 		{
+			if (!is_dir($dest))
+			{
+				throw new FilesystemException('Folder: ' . $dest . ' not exists.');
+			}
+
 			Folder::move($dest, $this->getSourcePath());
 		}
 
@@ -274,7 +309,9 @@ abstract class AbstractComponent
 	 */
 	protected function buildConf()
 	{
-		$this->execute($this->getSourcePath() . '/buildconf --force');
+		$alias = implode(' && ', $this->getAliasPrepare());
+
+		$this->execute(($alias ? $alias . ' && ' : null) . 'cd ' . $this->getSourcePath() . ' && ./buildconf --force');
 
 		return $this;
 	}
@@ -288,6 +325,10 @@ abstract class AbstractComponent
 	{
 		$command = 'cd ' . $this->getSourcePath() . ' && ./configure  --prefix=' . $this->getPrefix()
 			. '  ' . $this->getConfigureOptions(true);
+
+		$alias = implode(' && ', $this->getAliasPrepare());
+
+		$command =  $alias ? $alias . ' && ' . $command : $command;
 
 		$this->execute($command);
 	}
@@ -326,9 +367,14 @@ abstract class AbstractComponent
 
 		Folder::create(dirname($this->getTargetPath()));
 
-		Folder::move($this->getSourcePath(), $this->getTargetPath());
+		if (!is_dir($this->getBuildPath()))
+		{
+			throw new FilesystemException('Floder: ' . $this->getBuildPath() . ' noe exists.');
+		}
 
-		$this->io->out('Moved to: ' . $this->getTargetPath());
+		Folder::move($this->getBuildPath(), $this->getTargetPath());
+
+		$this->io->out('Moved built data to: ' . $this->getTargetPath());
 	}
 
 	/**
@@ -338,7 +384,7 @@ abstract class AbstractComponent
 	 */
 	public function getPrefix()
 	{
-		return $this->getBuildPath();
+		return $this->getTargetPath();
 	}
 
 	/**
@@ -356,6 +402,16 @@ abstract class AbstractComponent
 		}
 
 		return $this->configureOptions;
+	}
+
+	/**
+	 * getAliasPrepare
+	 *
+	 * @return  array
+	 */
+	public function getAliasPrepare()
+	{
+		return [];
 	}
 
 	/**
@@ -386,6 +442,16 @@ abstract class AbstractComponent
 	public function getArchivePath()
 	{
 		return $this->getPath() . '/archive';
+	}
+
+	/**
+	 * getExtractedPath
+	 *
+	 * @return  string
+	 */
+	public function getExtractedPath()
+	{
+		return $this->getName() . '-' . $this->getVersion();
 	}
 
 	/**

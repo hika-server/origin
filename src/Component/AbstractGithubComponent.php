@@ -8,8 +8,6 @@
 
 namespace Hika\Component;
 
-use Windwalker\Filesystem\Folder;
-
 /**
  * The AbstractGithubComponent class.
  * 
@@ -17,34 +15,16 @@ use Windwalker\Filesystem\Folder;
  */
 class AbstractGithubComponent extends AbstractComponent
 {
+	const REPO_USER = 0;
+	const REPO_NAME = 1;
+	const REPO_FULL = 2;
+
 	/**
 	 * Property repository.
 	 *
 	 * @var  string
 	 */
 	protected $repository = null;
-
-	/**
-	 * extract
-	 *
-	 * @return  string
-	 */
-	public function extract()
-	{
-		$dest = parent::extract(false);
-
-		$newDest = $dest . '/' . $this->getName() . '-' . $this->getVersion();
-
-		if (!is_dir($newDest))
-		{
-			// Remove v
-			$newDest = $dest . '/' . $this->getName() . '-' . substr($this->getVersion(), 1);
-		}
-
-		Folder::move($newDest, $this->getSourcePath());
-
-		return $newDest;
-	}
 
 	/**
 	 * getDownloadUrl
@@ -59,10 +39,26 @@ class AbstractGithubComponent extends AbstractComponent
 	/**
 	 * Method to get property Repository
 	 *
-	 * @return  string
+	 * @param int $type
+	 *
+	 * @return string
 	 */
-	public function getRepository()
+	public function getRepository($type = self::REPO_FULL)
 	{
+		$repository = $this->repository;
+
+		if ($type == static::REPO_NAME || $type == static::REPO_USER)
+		{
+			$repository = explode('/', $repository);
+
+			if (count($repository) < 2)
+			{
+				throw new \LogicException('Repository name should be full name. example: user/repo');
+			}
+
+			return $repository[$type];
+		}
+
 		return $this->repository ? : $this->getName();
 	}
 
@@ -78,5 +74,15 @@ class AbstractGithubComponent extends AbstractComponent
 		$this->repository = $repository;
 
 		return $this;
+	}
+
+	/**
+	 * getExtractedPath
+	 *
+	 * @return  string
+	 */
+	public function getExtractedPath()
+	{
+		return $this->getRepository(static::REPO_NAME) . '-' . $this->getVersion();
 	}
 }

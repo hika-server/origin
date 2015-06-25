@@ -9,40 +9,30 @@
 namespace Hika\Component;
 
 /**
- * The ZlibComponent class.
+ * The AutoconfComponent class.
  * 
  * @since  {DEPLOY_VERSION}
  */
-class ZlibComponent extends AbstractGithubComponent
+class AutoconfComponent extends AbstractGithubComponent
 {
 	/**
 	 * Property name.
 	 *
 	 * @var  string
 	 */
-	protected $name = 'zlib';
+	protected $name = 'autoconf';
 
 	/**
 	 * Property version.
 	 *
 	 * @var  string
 	 */
-	protected $version = 'v1.2.8';
+	protected $version = 'AUTOCONF-2.59d';
 
 	/**
 	 * Property repository.
 	 *
 	 * @var  string
 	 */
-	protected $repository = 'madler/zlib';
-
-	/**
-	 * getExtractedPath
-	 *
-	 * @return  string
-	 */
-	public function getExtractedPath()
-	{
-		return $this->getName() . '-' . trim($this->getVersion(), 'v');
-	}
+	protected $repository = 'kergoth/autoconf';
 }

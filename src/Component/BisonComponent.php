@@ -9,40 +9,33 @@
 namespace Hika\Component;
 
 /**
- * The ZlibComponent class.
+ * The BisonComponent class.
  * 
  * @since  {DEPLOY_VERSION}
  */
-class ZlibComponent extends AbstractGithubComponent
+class BisonComponent extends AbstractComponent
 {
 	/**
 	 * Property name.
 	 *
 	 * @var  string
 	 */
-	protected $name = 'zlib';
+	protected $name = 'bison';
 
 	/**
 	 * Property version.
 	 *
 	 * @var  string
 	 */
-	protected $version = 'v1.2.8';
+	protected $version = '2.6.4';
 
 	/**
-	 * Property repository.
-	 *
-	 * @var  string
-	 */
-	protected $repository = 'madler/zlib';
-
-	/**
-	 * getExtractedPath
+	 * getDownloadUrl
 	 *
 	 * @return  string
 	 */
-	public function getExtractedPath()
+	public function getDownloadUrl()
 	{
-		return $this->getName() . '-' . trim($this->getVersion(), 'v');
+		return 'http://ftp.gnu.org/gnu/bison/bison-' . $this->getVersion() . '.tar.gz';
 	}
 }
