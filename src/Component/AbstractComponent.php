@@ -11,7 +11,6 @@ namespace Hika\Component;
 use Hika\Filesystem\Downloader;
 use Hika\Ioc;
 use Windwalker\Filesystem\Exception\FilesystemException;
-use Windwalker\Filesystem\File;
 use Windwalker\Filesystem\Folder;
 use Windwalker\Registry\Registry;
 
@@ -169,12 +168,39 @@ abstract class AbstractComponent
 	}
 
 	/**
+	 * preCompile
+	 *
+	 * @return  void
+	 */
+	protected function preCompile()
+	{
+
+	}
+
+	/**
+	 * postCompile
+	 *
+	 * @return  void
+	 */
+	protected function postCompile()
+	{
+
+	}
+
+	/**
 	 * compile
 	 *
 	 * @return  void
 	 */
 	public function compile()
 	{
+		if ($this->config['compiled'])
+		{
+			return;
+		}
+
+		$this->preCompile();
+
 		if (!$this->config['compile.again'] && is_dir($this->getTargetPath()))
 		{
 			$this->out($this->getName() . ' has compiled');
@@ -207,6 +233,10 @@ abstract class AbstractComponent
 //		$this->moveToLibrary();
 
 		$this->out($this->getName() . ' build complete.');
+
+		$this->postCompile();
+
+		$this->config['compiled'] = true;
 	}
 
 	/**
@@ -218,6 +248,11 @@ abstract class AbstractComponent
 	 */
 	public function download($reset = false)
 	{
+		if ($this->config['downloaded'])
+		{
+			return $this;
+		}
+
 		$this->downloadDependencies($reset);
 
 		if ($this->test)
@@ -248,6 +283,8 @@ abstract class AbstractComponent
 
 		$this->out('Extract.');
 		$this->extract();
+
+		$this->config['downloaded'];
 
 		return $this;
 	}
@@ -390,18 +427,22 @@ abstract class AbstractComponent
 	/**
 	 * getConfigureOptions
 	 *
-	 * @param bool $toString
+	 * @param bool  $toString
+	 *
+	 * @param array $options
 	 *
 	 * @return array|string
 	 */
-	public function getConfigureOptions($toString = false)
+	public function getConfigureOptions($toString = false, $options = [])
 	{
+		$options = array_merge($this->configureOptions, $options);
+
 		if ($toString)
 		{
-			return implode('  ', $this->configureOptions);
+			return implode('  ', $options);
 		}
 
-		return $this->configureOptions;
+		return $options;
 	}
 
 	/**
