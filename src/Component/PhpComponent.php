@@ -57,6 +57,8 @@ class PhpComponent extends AbstractGithubComponent
 			->addDependency(new BisonComponent)
 			->addDependency(new JpegComponent)
 			->addDependency(new PngComponent)
+			->addDependency(new GmpComponent)
+			->addDependency(new McryptComponent)
 			->addDependency(new FreetypeComponent)
 			->addDependency(new ZlibComponent)
 		;
@@ -145,9 +147,9 @@ class PhpComponent extends AbstractGithubComponent
 			'--enable-sysvshm',
 			'--enable-wddx',
 			'--with-curl',
-			'--with-mcrypt',
+			'--with-mcrypt=' . $this->getDependency('mcrypt')->getTargetPath(),
 			'--with-iconv',
-			'--with-gmp',
+			'--with-gmp=' . $this->getDependency('gmp')->getTargetPath(),
 			'--with-pspell',
 			'--with-gd',
 			'--with-jpeg-dir=' . $this->getDependency('jpeg')->getTargetPath(),

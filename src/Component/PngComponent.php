@@ -27,7 +27,7 @@ class PngComponent extends AbstractGithubComponent
 	 *
 	 * @var  string
 	 */
-	protected $repository = 'asika32764/libpng';
+	protected $repository = 'hika-server/libpng';
 
 	/**
 	 * Property version.
