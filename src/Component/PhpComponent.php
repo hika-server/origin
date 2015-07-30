@@ -59,6 +59,7 @@ class PhpComponent extends AbstractGithubComponent
 			->addDependency(new PngComponent)
 			->addDependency(new GmpComponent)
 			->addDependency(new McryptComponent)
+			// ->addDependency(new AspellComponent)
 			->addDependency(new FreetypeComponent)
 			->addDependency(new ZlibComponent)
 		;
@@ -150,7 +151,7 @@ class PhpComponent extends AbstractGithubComponent
 			'--with-mcrypt=' . $this->getDependency('mcrypt')->getTargetPath(),
 			'--with-iconv',
 			'--with-gmp=' . $this->getDependency('gmp')->getTargetPath(),
-			'--with-pspell',
+			// '--with-pspell=' . $this->getDependency('aspell')->getTargetPath(),
 			'--with-gd',
 			'--with-jpeg-dir=' . $this->getDependency('jpeg')->getTargetPath(),
 			'--with-png-dir=' . $this->getDependency('png')->getTargetPath(),
