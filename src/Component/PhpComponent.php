@@ -30,7 +30,7 @@ class PhpComponent extends AbstractGithubComponent
 	 *
 	 * @var  string
 	 */
-	protected $version = 'php-7.0.0alpha1';
+	protected $version = 'php-7.0.0beta2';
 
 	/**
 	 * Property repository.
@@ -104,11 +104,11 @@ class PhpComponent extends AbstractGithubComponent
 	 */
 	protected function postCompile()
 	{
-		File::delete('/usr/local/bin/bison');
-
 		// Restore
 		if (is_file('/usr/local/bin/bison.bak'))
 		{
+			File::delete('/usr/local/bin/bison');
+
 			File::move('/usr/local/bin/bison.bak', '/usr/local/bin/bison');
 		}
 	}
@@ -118,7 +118,7 @@ class PhpComponent extends AbstractGithubComponent
 	 */
 	public function __destruct()
 	{
-
+		$this->postCompile();
 	}
 
 	/**

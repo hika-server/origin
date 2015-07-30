@@ -35,4 +35,29 @@ class AutoconfComponent extends AbstractGithubComponent
 	 * @var  string
 	 */
 	protected $repository = 'kergoth/autoconf';
+
+	/**
+	 * postCompile
+	 *
+	 * @return  void
+	 */
+	protected function postCompile()
+	{
+		$files = array(
+			'autoconf',
+			'autoheader',
+			'autom4te',
+			'autoreconf',
+			'autoscan',
+			'autoupdate'
+		);
+
+		foreach ($files as $file)
+		{
+			if (!is_file('/usr/local/bin/' . $file))
+			{
+				symlink($this->getTargetPath() . '/bin/' . $file, '/usr/local/bin/' . $file);
+			}
+		}
+	}
 }

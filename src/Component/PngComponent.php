@@ -34,7 +34,7 @@ class PngComponent extends AbstractGithubComponent
 	 *
 	 * @var  string
 	 */
-	protected $version = 'v1.6.17';
+	protected $version = 'v1.4.14';
 
 	/**
 	 * initialise
@@ -43,7 +43,7 @@ class PngComponent extends AbstractGithubComponent
 	 */
 	protected function initialise()
 	{
-		$this->addDependency(ComponentContainer::get('autoconf'));
+		$this->addDependency(ComponentContainer::get('automake'));
 	}
 
 	/**
@@ -53,9 +53,9 @@ class PngComponent extends AbstractGithubComponent
 	 */
 	protected function configure()
 	{
-		$command = ' cd ' . $this->getSourcePath() . ' && ' . $this->getSourcePath() . '/autogen.sh';
+		// $command = ' cd ' . $this->getSourcePath() . ' && ' . $this->getSourcePath() . '/autogen.sh';
 
-		$this->execute($command);
+		// $this->execute($command);
 
 		parent::configure();
 	}
